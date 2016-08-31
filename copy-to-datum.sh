@@ -13,15 +13,16 @@ fi
 for file in $DATA_DIR/*
 do
     file_name=`basename $file`
-    if [[ $file_name =~ ^[0-9]+$ ]]; then
-        if [ $file_name -gt $num ]; then
-            num=$file_name
+    if [[ $file_name =~ ^[0-9]+_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]]; then
+        file_num=${file_name%%_*}
+        if [ $file_num -gt $num ]; then
+            num=$file_num
         fi
     fi
 done
 
 num=$[$num + 1]
-DATA_DIR=$DATA_DIR/$num
+DATA_DIR=$DATA_DIR/$num`date +"_%Y-%m-%d_%H:%M:%S"`
 mkdir $DATA_DIR
 cp $GEM5 $DATA_DIR -r
 cp $GEM5_ORIGIN $DATA_DIR/m5out-origin -r

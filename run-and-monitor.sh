@@ -1,4 +1,17 @@
 #!/bin/bash
+stats1=$HOME/gem5/m5out/stats.txt
+stats2=$HOME/gem5-origin/m5out/stats.txt
+
+function print-ipc {
+    line1=`sed -n 10p $stats1`
+    line2=`sed -n 10p $stats2`
+    ipc1=`echo $line1|cut -d " " -f 2`
+    ipc2=`echo $line2|cut -d " " -f 2`
+    echo "gem5-origin IPC: $ipc2"
+    echo "gem5 IPC: $ipc1"
+    awk 'BEGIN{printf "IPC improved: %.2f%\n",(('$ipc1'-'$ipc2')/'$ipc2')*100}'
+}
+
 {
     cd $HOME/gem5
     ./run-cmesh.sh
@@ -24,11 +37,9 @@
         fi
     done
 
-    stats1=$HOME/gem5/m5out/stats.txt
-    stats2=$HOME/gem5-origin/m5out/stats.txt
     if [ -s $stats1 ] && [ -s $stats2 ]; then
         copy-to-datum.sh
-        compare-stats.sh
+        print-ipc
     else
         echo "One(Both) stats.txt is empty, done."
     fi

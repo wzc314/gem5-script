@@ -29,7 +29,7 @@ function backup {
     cp $GEM5 $data_dir -r
     cp $GEM5_ORIGIN $data_dir/m5out-origin -r
     tree $data_dir
-    echo "Copying m5out to datum finish."
+    echo "Copying m5out to datum, done."
 }
 
 function remove {
@@ -69,6 +69,7 @@ elif [ $# -eq 0 ]; then
 else
     case "$1" in
         -r) remove;;
+        -l) ls $data_dir;;
         *) echo "Argument \"$1\" is invalid.";;
     esac
 fi

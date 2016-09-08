@@ -1,9 +1,9 @@
 #!/bin/bash
-# Copying m5out to datum.
+# Copying m5out to gem5-results
 GEM5=$HOME/gem5/m5out
 GEM5_ORIGIN=$HOME/gem5-origin/m5out
 DIR_FORMAT="^[0-9]+_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}:[0-9]{2}$" 
-data_dir=$HOME/datum
+data_dir=$HOME/gem5-results
 num=0
 
 function backup {
@@ -29,7 +29,7 @@ function backup {
     cp $GEM5 $data_dir -r
     cp $GEM5_ORIGIN $data_dir/m5out-origin -r
     tree $data_dir
-    echo "Copying m5out to datum, done."
+    echo "Copying m5out to gem5-results, done."
 }
 
 function remove {
@@ -63,7 +63,7 @@ function remove {
 }
 
 if [ $# -gt 1 ]; then
-    echo "Usage: copy-to-datum [-r]"
+    echo "Usage: copy-to-results [-r] [-l]"
 elif [ $# -eq 0 ]; then
     backup
 else

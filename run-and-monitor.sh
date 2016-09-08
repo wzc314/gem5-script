@@ -38,7 +38,7 @@ function print-ipc {
     done
 
     if [ -s $stats1 ] && [ -s $stats2 ]; then
-        copy-to-datum.sh
+        copy-to-results.sh
         print-ipc
     else
         echo "One(Both) stats.txt is empty, done."

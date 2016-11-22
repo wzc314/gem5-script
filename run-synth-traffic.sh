@@ -34,6 +34,4 @@ fi
 --synthetic=$synthetic \
 --injectionrate=$rate
 sed -n 13805p m5out-synth/stats.txt
-sed -n 13824p m5out-synth/stats.txt
-sed -n 13825p m5out-synth/stats.txt
 tput bel

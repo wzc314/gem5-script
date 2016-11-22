@@ -1,6 +1,7 @@
 #!/bin/bash
+file=m5out-synth/stats.txt
 function get-value {
-    echo $(sed -n $1p m5out-synth/stats.txt)|cut -d " " -f 2
+    echo $(sed -n $1p $file)|cut -d " " -f 2
 }
 
 function run-synth-traffic {
@@ -14,15 +15,17 @@ function run-synth-traffic {
     --synthetic=$2 \
     --injectionrate=$3 &> /dev/null
     latency=`get-value 13805`
-    flits_latency=`get-value 13816`
+    flits_latency=`grep 'flit_latency_hist::mean' $file | tr -s ' ' | cut -d ' ' -f 2`
+    latency_stdev=`grep 'flit_latency_hist::stdev' $file | tr -s ' ' | cut -d ' ' -f 2`
+    latency_max=`grep 'max_flit_latency' $file | tr -s ' ' | cut -d ' ' -f 2`
     in_arb_activity=`get-value 13824`
     out_arb_activity=`get-value 13825`
     pkt_received=`get-value 13796`
     pkt_injected=`get-value 13798`
     flits_received=`get-value 13807`
     flits_injected=`get-value 13809`
-    printf "%-8s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
-        $3 $latency $flits_latency $in_arb_activity $out_arb_activity $pkt_received $pkt_injected $flits_received $flits_injected \
+    printf "%-8s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
+        $3 $latency $flits_latency $in_arb_activity $out_arb_activity $pkt_received $pkt_injected $flits_received $flits_injected $latency_max $latency_stdev \
         | tee m5out-synth/latency.txt -a
 }
 
@@ -46,8 +49,8 @@ elif [ -n "$(ls -A m5out-synth)" ];then
 fi
 cp $0 m5out-synth
 
-printf "\e[40;33;1m%-8s %16s %16s %16s %16s %16s %16s %16s %16s\e[m\n" \
-    "inj_rate" "latency" "flits_latency" "in_arb_activity" "out_arb_activity" "pkt_received" "pkt_injected" "flits_received" "flits_injected" \
+printf "\e[40;33;1m%-8s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\e[m\n" \
+    "inj_rate" "latency" "flits_latency" "in_arb_activity" "out_arb_activity" "pkt_received" "pkt_injected" "flits_received" "flits_injected" "latency_max" "latency_stdev" \
     | tee m5out-synth/latency.txt
 for (( i=1; i <= 30; i++ ))
 do

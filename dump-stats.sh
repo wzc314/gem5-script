@@ -10,28 +10,13 @@ do
     do
         file=$stats_dir/$class/m5out-$benchmark/stats.txt
         ipc=`sed -n 10p $file | tr -s ' ' | cut -d ' ' -f 2`
-        flit_latency=`grep 'delayHist::mean' $file | tr -s ' ' | cut -d ' ' -f 2`
-        stdev=`grep 'delayHist::stdev' $file | tr -s ' ' | cut -d ' ' -f 2`
+        flit_latency=`grep 'flit_latency_hist::mean' $file | tr -s ' ' | cut -d ' ' -f 2`
+        stdev=`grep 'flit_latency_hist::stdev' $file | tr -s ' ' | cut -d ' ' -f 2`
         max=`grep 'max_flit_latency' $file | tr -s ' ' | cut -d ' ' -f 2`
-        case $class in
-            myopt) 
-                myopt_latency=$flit_latency
-                myopt_ipc=$ipc
-                myopt_stdev=$stdev
-                myopt_max=$max;;
-            origin)
-                origin_latency=$flit_latency
-                origin_ipc=$ipc
-                origin_stdev=$stdev
-                origin_max=$max;;
-            tsrouter)
-                tsrouter_latency=$flit_latency
-                tsrouter_ipc=$ipc
-                tsrouter_stdev=$stdev
-                tsrouter_max=$max;;
-            *)
-                echo "Unknown class: $class";;
-        esac
+        eval ${class}_latency=$flit_latency
+        eval ${class}_ipc=$ipc
+        eval ${class}_stdev=$stdev
+        eval ${class}_max=$max
     done
     echo -e "\e[40;34;1m$benchmark\e[m"
     awk 'BEGIN{printf "%-8s %10.4f           %10.4f           %10.4f           %10d\n", "myopt", '$myopt_latency', '$myopt_ipc', '$myopt_stdev', '$myopt_max'}' 

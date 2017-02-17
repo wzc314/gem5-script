@@ -1,7 +1,7 @@
 #!/bin/bash
-rows=8
+rows=4
 benchmark=bzip2
-maxinsts=10000000
+maxinsts=20000000
 while getopts r:b:o:m: opt
 do
     case $opt in
@@ -35,12 +35,13 @@ cp $0 $outdir
 --l1d_size=16kB --l1d_assoc=2 \
 --l2cache --l2_size=128kB --l2_assoc=4 --num-l2caches=$num \
 --topology=MeshDirCorners_XY --mesh-rows=$rows \
+--vcs-per-vnet=4 \
 --num-dirs=4 --mem-size=8GB \
 --sys-clock=1GHz --ruby-clock=2GHz --cpu-clock=2GHz \
 --output=$outdir --errout=$outdir \
 --maxinsts=$maxinsts \
 --network=garnet2.0 &> $outdir/runscript.log
 
-IPC=`sed -n 10p $outdir/stats.txt | tr -s ' ' | cut -d ' ' -f 2`
-printf "%-25s %12s %10.4f\n" $(basename $(pwd)) $benchmark $IPC
+IPC=$(sed -n 10p $outdir/stats.txt | tr -s ' ' | cut -d ' ' -f 2)
+printf "%-20s %12s %10.4f\n" $(basename $(pwd)) $benchmark $IPC
 tput bel

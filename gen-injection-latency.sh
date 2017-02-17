@@ -12,6 +12,7 @@ function run-synth-traffic {
     --topology=Mesh_XY \
     --mesh-rows=8  \
     --sim-cycles=$1 \
+    --vcs-per-vnet=4 \
     --synthetic=$2 \
     --injectionrate=$3 &> /dev/null
     latency=`get-value 13805`
@@ -30,7 +31,7 @@ function run-synth-traffic {
 }
 
 step=0.01
-rate=0
+rate=0.11
 sim_cycles=10000
 synthetic=uniform_random
 while getopts c:s: opt
@@ -52,7 +53,7 @@ cp $0 m5out-synth
 printf "\e[40;33;1m%-8s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\e[m\n" \
     "inj_rate" "latency" "flits_latency" "in_arb_activity" "out_arb_activity" "pkt_received" "pkt_injected" "flits_received" "flits_injected" "latency_max" "latency_stdev" \
     | tee m5out-synth/latency.txt
-for (( i=1; i <= 30; i++ ))
+for (( i=1; i <= 1; i++ ))
 do
     rate=`printf "%.2f" $(bc<<<$rate+$step)`
     run-synth-traffic $sim_cycles $synthetic $rate

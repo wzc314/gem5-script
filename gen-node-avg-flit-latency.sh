@@ -15,24 +15,23 @@ function run-synth-traffic {
     --num-dirs=$num \
     --network=garnet2.0 \
     --topology=Mesh_XY \
-    --mesh-rows=$4  \
+    --mesh-rows=$4 \
     --sim-cycles=$1 \
     --vcs-per-vnet=4 \
-    --inj-vnet=-1 \
+    --inj-vnet=0 \
     --link-latency=2 \
     --synthetic=$2 \
     --injectionrate=$3 &> /dev/null
-    flit_samples=$(grep-value flit_latency_hist::samples)
-    flit_latency=$(grep-value flit_latency_hist::mean)
-    flit_stdev=$(grep-value flit_latency_hist::stdev)
-    flit_max=$(grep-value max_flit_latency)
-    packet_samples=$(grep-value packet_latency_hist::samples)
-    packet_latency=$(grep-value packet_latency_hist::mean)
-    packet_stdev=$(grep-value packet_latency_hist::stdev)
-    packet_max=$(grep-value max_packet_latency)
-    printf "%-8s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
-        $3 $flit_samples $flit_latency $flit_max $flit_stdev $packet_samples $packet_latency $packet_max $packet_stdev \
-        | tee m5out-synth/latency.txt -a
+    latency=()
+    local i=0
+    for (( i=0; i <= $[$num-1]; i++ ))
+    do
+        latency[$i]=$(grep-value average_flit_node_injected_latency::$i)
+        printf "%-12s" ${latency[$i]}
+        if [[ $((($i+1)%$rows)) -eq 0 ]];then
+            echo
+        fi
+    done
 }
 
 step=0.01
@@ -57,12 +56,10 @@ elif [ -n "$(ls -A m5out-synth)" ];then
 fi
 cp $0 m5out-synth
 
-printf "\e[40;33;1m%-8s %16s %16s %16s %16s %16s %16s %16s %16s\e[m\n" \
-    "inj_rate" "flit_samples" "flit_latency" "flit_max" "flit_stdev" "packet_samples" "packet_latency" "packet_max" "packet_stdev" \
-    | tee m5out-synth/latency.txt
 for (( i=1; i <= 70; i++ ))
 do
     rate=`printf "%.2f" $(bc<<<$rate+$step)`
+    echo $rate
     run-synth-traffic $sim_cycles $synthetic $rate $rows
 done
 echo -e "\e[40;33;1mdone.\e[m"

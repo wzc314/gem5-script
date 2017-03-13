@@ -43,5 +43,5 @@ cp $0 $outdir
 --network=garnet2.0 &> $outdir/runscript.log
 
 IPC=$(sed -n 10p $outdir/stats.txt | tr -s ' ' | cut -d ' ' -f 2)
-printf "%-20s %12s %10.4f\n" $(basename $(pwd)) $benchmark $IPC
+printf "%-15s %12s %10.4f\n" $(basename $(pwd)) $benchmark $IPC
 tput bel

@@ -1,16 +1,22 @@
 #!/bin/bash
 mode=opt
 rate=0.1
+sim_cycles=10000
 synthetic=uniform_random
-while getopts m:r:s: opt
+rows=4
+while getopts m:r:c:s:w: opt
 do
     case $opt in
         m) mode=$OPTARG;;
         r) rate=$OPTARG;;
+        c) sim_cycles=$OPTARG;;
         s) synthetic=$OPTARG;;
+        w) rows=$OPTARG;;
         *) echo "Unknown option: $opt";;
     esac
 done
+
+num=$[$rows*$rows]
 
 if [ ! -d m5out-synth ];then
     mkdir m5out-synth
@@ -23,15 +29,15 @@ if [ $mode = debug ];then
     flag="--debug-flag=RubyNetwork"
 fi
 
-./build/Garnet_standalone/gem5.$mode $flag \
+./build/NULL/gem5.$mode $flag \
 --outdir=m5out-synth configs/example/garnet_synth_traffic.py \
---num-cpus=64 \
---num-dirs=64 \
+--num-cpus=$num \
+--num-dirs=$num \
 --network=garnet2.0 \
 --topology=Mesh_XY \
---mesh-rows=8 \
---sim-cycles=10000 \
+--mesh-rows=$rows \
+--sim-cycles=$sim_cycles \
 --synthetic=$synthetic \
+--link-latency=2 \
 --injectionrate=$rate
-sed -n 13805p m5out-synth/stats.txt
 tput bel
